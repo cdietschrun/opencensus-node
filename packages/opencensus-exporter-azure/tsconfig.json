@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    "declaration": true,
     "outDir": "build",
     "pretty": true,
     "module": "commonjs",

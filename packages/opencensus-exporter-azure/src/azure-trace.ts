@@ -22,7 +22,8 @@ import {
     ExporterBuffer
 } from '@opencensus/core';
 
-import * as ApplicationInsights from 'applicationinsights';
+import { ApplicationInsights, SeverityLevel } from '@microsoft/applicationinsights-web';
+
 import { 
     IllegalOptionsError,
     AzureTraceExporterOptions,
@@ -50,6 +51,8 @@ export class AzureTraceExporter implements Exporter {
 
     /** Exporter Config Object for Azure Monitor */
     private config: ExporterConfig;
+
+    private appInsights: ApplicationInsights;
 
     // Define all other exporter variables.
     private timer: NodeJS.Timer;
@@ -86,7 +89,7 @@ export class AzureTraceExporter implements Exporter {
         }
 
         // Configure the Application Insights SDK to use the Instrumentation Key from our options.
-        ApplicationInsights.setup(this.options.instrumentationKey).start();
+        this.appInsights = new ApplicationInsights({ config: this.options });
     }
 
     /**
@@ -119,11 +122,15 @@ export class AzureTraceExporter implements Exporter {
 
         });
 
-        ApplicationInsights.defaultClient.trackTrace({
-            message: ROOT_NAME,
-            severity: ApplicationInsights.Contracts.SeverityLevel.Information,
-            properties: children
-        });
+        // ApplicationInsights.defaultClient.trackTrace({
+        //     message: ROOT_NAME,
+        //     severity: ApplicationInsights.Contracts.SeverityLevel.Information,
+        //     properties: children
+        // });
+
+        this.appInsights.trackTrace({message: ROOT_NAME,
+        severityLevel: SeverityLevel.Information,
+        properties: children});
 
         return Promise.resolve();
     }
